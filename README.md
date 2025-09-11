@@ -38,5 +38,25 @@ Navigator.of(context).push(
 ### Examples
 Check the `example/` app to see the package working with various layouts including PageView, nested scrollables, and long lists.
 
+## 🎬 Live Demo
+
+The following GIFs demonstrate the package in action across different scenarios:
+
+### 📱 Preview
+
+| Scenario | Description | Demo |
+|----------|-------------|------|
+| **Normal Swipe** | Basic back swipe gesture from anywhere on screen | ![Normal Swipe](screenshots/normal_swipe.gif) |
+| **PageView Swipe** | Back swipe works even with horizontal PageView at left edge | ![PageView Swipe](screenshots/page_view_swipe.gif) |
+| **Edge Swipe** | Edge swipes always trigger back gesture regardless of scrollable state | ![Edge Swipe](screenshots/edge_swipe.gif) |
+| **Nested Scroll** | Complex nested scrollable layouts with seamless back navigation | ![Nested Scroll](screenshots/nested_scroll_swipe.gif) |
+
+### 🎯 Key Scenarios Explained
+
+- **Normal Swipe**: Demonstrates the basic full-screen back swipe functionality
+- **PageView Swipe**: Shows how the package resolves conflicts with horizontal scrollables
+- **Edge Swipe**: Proves that edge swipes always work regardless of scrollable state
+- **Nested Scroll**: Handles complex layouts with multiple scrollable widgets
+
 ### License
 MIT

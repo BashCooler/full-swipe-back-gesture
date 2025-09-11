@@ -3,7 +3,7 @@ description: "iOS-style full-screen back swipe gesture PageRoute that works seam
 # Remove publish_to to allow publishing
 
 # Version follows semantic versioning (https://semver.org/)
-version: 0.1.0
+version: 0.1.1
 
 environment:
   sdk: ^3.8.1
@@ -37,3 +37,14 @@ topics:
   - ios
   - swipe
 license: MIT
+
+# Screenshots for pub.dev
+screenshots:
+  - description: 'Normal back swipe gesture from anywhere on screen'
+    path: screenshots/normal_swipe.gif
+  - description: 'Back swipe works with horizontal PageView at left edge'
+    path: screenshots/page_view_swipe.gif
+  - description: 'Edge swipes always trigger back gesture'
+    path: screenshots/edge_swipe.gif
+  - description: 'Complex nested scrollable layouts with seamless navigation'
+    path: screenshots/nested_scroll_swipe.gif
