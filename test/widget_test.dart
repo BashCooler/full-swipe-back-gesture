@@ -1,30 +1,36 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:full_swipe_back_gesture/main.dart';
+import 'package:full_swipe_back_gesture/full_swipe_back_gesture.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('BackSwipePageRoute smoke test', (WidgetTester tester) async {
+    // Test that BackSwipePageRoute can be created without errors
+    final route = BackSwipePageRoute(
+      builder: (context) =>
+          const Scaffold(body: Center(child: Text('Test Page'))),
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    expect(route, isA<BackSwipePageRoute>());
+    expect(route.edgeStartWidthPx, equals(24.0));
+    expect(route.pushCurve, equals(Curves.easeOutCubic));
+    expect(route.popCurve, equals(Curves.easeIn));
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  testWidgets('BackSwipePageRoute with custom parameters', (
+    WidgetTester tester,
+  ) async {
+    final route = BackSwipePageRoute(
+      builder: (context) =>
+          const Scaffold(body: Center(child: Text('Test Page'))),
+      edgeStartWidthPx: 50.0,
+      pushCurve: Curves.easeInOut,
+      popCurve: Curves.easeOut,
+      transitionDuration: const Duration(milliseconds: 300),
+    );
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(route.edgeStartWidthPx, equals(50.0));
+    expect(route.pushCurve, equals(Curves.easeInOut));
+    expect(route.popCurve, equals(Curves.easeOut));
+    expect(route.transitionDuration, equals(const Duration(milliseconds: 300)));
   });
 }
