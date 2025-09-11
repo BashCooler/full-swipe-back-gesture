@@ -10,10 +10,10 @@ The following GIFs demonstrate the package in action across different scenarios:
 
 | Scenario | Description | Demo |
 |----------|-------------|------|
-| **Normal Swipe** | Basic back swipe gesture from anywhere on screen | ![Normal Swipe](screenshots/normal_swipe.gif) |
-| **PageView Swipe** | Back swipe works even with horizontal PageView at left edge | ![PageView Swipe](screenshots/page_view_swipe.gif) |
-| **Edge Swipe** | Edge swipes always trigger back gesture regardless of scrollable state | ![Edge Swipe](screenshots/edge_swipe.gif) |
-| **Nested Scroll** | Complex nested scrollable layouts with seamless back navigation | ![Nested Scroll](screenshots/nested_scroll_swipe.gif) |
+| **Normal Swipe** | Basic back swipe gesture from anywhere on screen | ![Normal Swipe](https://raw.githubusercontent.com/ssan9woo/full-swipe-back-gesture/main/screenshots/normal_swipe.gif) |
+| **PageView Swipe** | Back swipe works even with horizontal PageView at left edge | ![PageView Swipe](https://raw.githubusercontent.com/ssan9woo/full-swipe-back-gesture/main/screenshots/page_view_swipe.gif) |
+| **Edge Swipe** | Edge swipes always trigger back gesture regardless of scrollable state | ![Edge Swipe](https://raw.githubusercontent.com/ssan9woo/full-swipe-back-gesture/main/screenshots/edge_swipe.gif) |
+| **Nested Scroll** | Complex nested scrollable layouts with seamless back navigation | ![Nested Scroll](https://raw.githubusercontent.com/ssan9woo/full-swipe-back-gesture/main/screenshots/nested_scroll_swipe.gif) |
 
 ### 🎯 Key Scenarios Explained
 
