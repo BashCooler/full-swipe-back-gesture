@@ -1,3 +1,9 @@
+## 0.1.2
+
+- Fixed GIF display issue by using GitHub raw URLs
+- Ensures demo videos display properly on both GitHub and pub.dev
+- Improved user experience with visible demo videos
+
 ## 0.1.1
 
 - Added comprehensive demo videos and screenshots

@@ -3,7 +3,7 @@ description: "iOS-style full-screen back swipe gesture PageRoute that works seam
 # Remove publish_to to allow publishing
 
 # Version follows semantic versioning (https://semver.org/)
-version: 0.1.1
+version: 0.1.2
 
 environment:
   sdk: ^3.8.1
