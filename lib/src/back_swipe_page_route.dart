@@ -67,13 +67,48 @@ class BackSwipePageRoute<T> extends PageRouteBuilder<T> {
   final Curve popCurve;
 }
 
+/// A [Widget] that enables iOS-like full back-swipe gesture from the left edge.
+///
+/// Works similar to [BackSwipePageRoute] but without the Route itself.
+///
+/// Can be used with navigation APIs like GoRouter or Get.
+class SwipeablePage extends StatelessWidget {
+  const SwipeablePage({
+    super.key,
+    required this.child,
+    this.edgeStartWidthPx = 24.0,
+    this.transitionDuration = const Duration(milliseconds: 200),
+    this.reverseTransitionDuration = const Duration(milliseconds: 200),
+  });
+
+  final Widget child;
+  final double edgeStartWidthPx;
+  final Duration transitionDuration;
+  final Duration reverseTransitionDuration;
+
+  @override
+  Widget build(BuildContext context) {
+    return _BackSwipeInteractor(
+      edgeStartWidthPx: edgeStartWidthPx,
+      transitionDuration: transitionDuration,
+      reverseTransitionDuration: reverseTransitionDuration,
+      child: child,
+    );
+  }
+}
+
 class _BackSwipeInteractor extends StatefulWidget {
   const _BackSwipeInteractor({
     required this.child,
     required this.edgeStartWidthPx,
+    this.transitionDuration = const Duration(milliseconds: 200),
+    this.reverseTransitionDuration = const Duration(milliseconds: 200),
   });
+
   final Widget child;
   final double edgeStartWidthPx;
+  final Duration transitionDuration;
+  final Duration reverseTransitionDuration;
 
   @override
   State<_BackSwipeInteractor> createState() => _BackSwipeInteractorState();
@@ -105,6 +140,24 @@ class _BackSwipeInteractorState extends State<_BackSwipeInteractor>
     return _anyHorizontalViewportContains(root, globalPosition);
   }
 
+  // Test if the pointer is in the editable text area
+  bool _isPointerInEditable(Offset globalPosition) {
+    final HitTestResult result = HitTestResult();
+
+    WidgetsBinding.instance.hitTestInView(
+      result,
+      globalPosition,
+      View.of(context).viewId,
+    );
+
+    for (final entry in result.path) {
+      final target = entry.target;
+      if (target is RenderEditable) return true;
+    }
+
+    return false;
+  }
+
   bool _anyHorizontalViewportContains(
     RenderObject renderObject,
     Offset globalPosition,
@@ -132,16 +185,16 @@ class _BackSwipeInteractorState extends State<_BackSwipeInteractor>
   @override
   void initState() {
     super.initState();
-    _controller =
-        AnimationController(
+        _controller = AnimationController(
           vsync: this,
-          duration: const Duration(milliseconds: 200),
+          duration: widget.transitionDuration,
         )..addListener(() {
           setState(() => _dx = _dxAnim.value);
         });
     _recognizer = _BackSwipeRecognizer(
       isEligible: () => _isAtLeftEdge,
       isPointerInHorizontal: _isPointerInHorizontalScrollable,
+      isPointerInEditable: _isPointerInEditable,
       edgeStartWidthPx: widget.edgeStartWidthPx,
       onAccepted: () {
         setState(() => _dragging = true);
@@ -156,9 +209,14 @@ class _BackSwipeInteractorState extends State<_BackSwipeInteractor>
         final width = MediaQuery.of(context).size.width;
         final shouldPop = velocity > 900 || totalDx > width * 0.50;
         if (shouldPop) {
-          if (mounted) {
-            Navigator.of(context).pop();
-          }
+          // Use maybe pop so we can cancel transition with pop scope.
+          // First pop then animate so we can use previous page immediately.
+          if (mounted) Navigator.of(context).maybePop();
+          _controller.duration = widget.reverseTransitionDuration;
+          _dxAnim = Tween(begin: _dx, end: width).animate(
+            CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
+          );
+          _controller.forward(from: 0);
         } else {
           _dxAnim = Tween(begin: _dx, end: 0.0).animate(
             CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
@@ -244,10 +302,12 @@ class _BackSwipeRecognizer extends OneSequenceGestureRecognizer {
     required this.onAccepted,
     required this.onDelta,
     required this.onEnd,
+    required this.isPointerInEditable,
   });
 
   final bool Function() isEligible;
   final bool Function(Offset globalPosition) isPointerInHorizontal;
+  final bool Function(Offset globalPosition) isPointerInEditable;
   final double edgeStartWidthPx;
   final VoidCallback onAccepted;
   final void Function(double deltaDx) onDelta;
@@ -257,6 +317,7 @@ class _BackSwipeRecognizer extends OneSequenceGestureRecognizer {
   bool _accepted = false;
   double _totalDx = 0.0;
   bool _startedInHorizontal = false;
+  bool _startedInEditable = false;
   bool _startedNearLeftEdge = false;
   final VelocityTracker _tracker = VelocityTracker.withKind(
     PointerDeviceKind.touch,
@@ -271,6 +332,7 @@ class _BackSwipeRecognizer extends OneSequenceGestureRecognizer {
     _accepted = false;
     _totalDx = 0.0;
     _startedInHorizontal = isPointerInHorizontal(event.position);
+    _startedInEditable = isPointerInEditable(event.position);
     _startedNearLeftEdge = event.position.dx <= edgeStartWidthPx;
     _tracker.addPosition(event.timeStamp, event.position);
   }
@@ -288,8 +350,10 @@ class _BackSwipeRecognizer extends OneSequenceGestureRecognizer {
         final movedEnough = delta.distance >= _minDistance;
         final isRight = dx > 0;
         final horizontalDominant = dx.abs() > dy * 1.2;
-        final eligibleNow =
-            _startedNearLeftEdge || (!_startedInHorizontal || isEligible());
+        // Reject gesture if in editable text area
+        final eligibleNow = _startedInEditable
+            ? _startedNearLeftEdge
+            : (_startedNearLeftEdge || (!_startedInHorizontal || isEligible()));
 
         if (movedEnough && isRight && horizontalDominant && eligibleNow) {
           _accepted = true;
